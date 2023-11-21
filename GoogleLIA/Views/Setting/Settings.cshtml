@@ -1,0 +1,87 @@
+﻿@using GoogleLIA.Models
+
+@model Setting
+
+@{
+    ViewBag.Title = "Settings";
+}
+
+@using (Html.BeginForm("Update", "Setting", FormMethod.Post))
+{
+    <div class="panel panel-default">
+        <div class="sub-header panel-body list-inline">
+            <span class="glyphicon glyphicon-tasks sub-header-taskicon"></span>
+            <span class="sub-head-text">GOOGLE SETTING DETAILS</span>
+            <span class="glyphicon glyphicon-refresh sub-header-taskicon right"></span>
+            <span class="glyphicon glyphicon-chevron-down sub-header-taskicon right"></span>
+        </div>
+
+        <div class="sub-body-content">
+            <div class="form-group" style="display: flex;">
+                <div class="col-md-3" style="margin-top: 10px;">
+                    <text style="font-size: 20px; ">Google Merchant Account ID</text>
+                </div>
+
+                <div class="col-md-4">
+                    @Html.TextBoxFor(m => m.Merchant_id, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <div class="col-md-3" style="margin-top: 10px;">
+                    <text style="font-size: 20px; ">Google Ads Account ID</text>
+                </div>
+
+                <div class="col-md-4">
+                    @Html.TextBoxFor(m => m.Ads_id, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <div class="col-md-3" style="margin-top: 10px;">
+                    <text style="font-size: 20px; ">Base URL</text>
+                </div>
+
+                <div class="col-md-4">
+                    @Html.TextBoxFor(m => m.Base_url, new {@class = "form-control" })
+                </div>
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <div class="col-md-3" style="margin-top: 10px;">
+                    <text style="font-size: 20px; ">Shopping Cart</text>
+                </div>
+
+                <div class="col-md-4">
+                    @Html.CheckBoxFor(m => m.isMagento, "Magento")
+                    <text style="font-size: 15px;">Magento</text>
+                    @Html.CheckBoxFor(m => m.isBigcommerce, "Bigcommerce")
+                    <text style="font-size: 15px;">Bigcommerce</text>
+                    @Html.CheckBoxFor(m => m.isWoocommerce, "Woocommerce")
+                    <text style="font-size: 15px;">Woocommerce</text>
+                    @Html.CheckBoxFor(m => m.isShopify, "Shopify")
+                    <text style="font-size: 15px;">Shopify</text>
+                </div>
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <div class="col-md-3" style="margin-top: 10px;">
+                    <text style="font-size: 20px; ">Sync Status</text>
+                </div>
+
+                <div class="col-md-4">
+                    @Html.DropDownListFor(m => m.op, new SelectList(Enum.GetValues(typeof(option))), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; margin-left: 15px">
+        <div class="col-md-3" style="margin-top: 10px;"></div>
+        <div class="col-md-2 btn-group btn-group-lg">
+            <button type="submit" class="btn btn-default" style="background-color: yellow; color: black;">Save</button>
+        </div>
+    </div>
+}
+
+

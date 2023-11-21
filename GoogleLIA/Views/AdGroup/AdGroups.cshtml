@@ -1,0 +1,55 @@
+﻿@using GoogleLIA.Models
+
+@model AdGroup
+@{
+    ViewBag.Title = "AdGroups";
+}
+
+<div class="panel panel-default">
+    <div class="sub-header panel-body list-inline">
+        <span class="glyphicon glyphicon-tasks sub-header-taskicon"></span>
+        <span class="sub-head-text">AD Groups</span>
+        <span class="glyphicon glyphicon-refresh sub-header-taskicon right"></span>
+        <span class="glyphicon glyphicon-chevron-down sub-header-taskicon right"></span>
+    </div>
+    <div class="sub-body-content">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">S.No</th>
+                    <th scope="col">Campaign Name</th>
+                    <th scope="col">Ad Group Name</th>
+                    <th scope="col">Clicks</th>
+                    <th scope="col">Impressions</th>
+                    <th scope="col">CTR</th>
+                    <th scope="col">Avg.CPC</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Convension</th>
+                    <th scope="col">Cost/Conv.</th>
+                    <th scope="col">Conv.Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @*@foreach (var m in AdGroups)
+                {
+                <tr>
+                    <th scope="col">m.id</th>
+                    <th scope="col">m.Campaign_Name</th>
+                    <th scope="col">m.Ad_Group_Name</th>
+                    <th scope="col">m.Clicks</th>
+                    <th scope="col">m.Impressions</th>
+                    <th scope="col">m.CTR</th>
+                    <th scope="col">m.Avg_CPC</th>
+                    <th scope="col">m.Cost</th>
+                    <th scope="col">m.Convension</th>
+                    <th scope="col">m.Cost_Conv.</th>
+                    <th scope="col">m.Conv_Rate</th>
+                    <th scope="col">m.Bid</th>
+                    <th scope="col">m.Ad_Group_Audiences</th>
+                </tr>
+                }*@
+            </tbody>
+        </table>
+    </div>
+</div>
+

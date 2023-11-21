@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewBag.Title = "CustomRules";
+}
+
+<div class="panel panel-default">
+    <div class="sub-header panel-body list-inline">
+        <span class="glyphicon glyphicon-tasks sub-header-taskicon"></span>
+        <span class="sub-head-text">GOOGLE CUSTOM RULES</span>
+        <span class="glyphicon glyphicon-refresh sub-header-taskicon right"></span>
+        <span class="glyphicon glyphicon-chevron-down sub-header-taskicon right"></span>
+    </div>
+    <div class="sub-body-content">
+        <div style="display: flex;">
+            <text class="col-md-3" style="font-size: 20px;">Select Campaign</text>
+            <select class="form-control">
+                <option>Campaign-Octopus</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <text class="col-md-3" style="font-size: 20px">1. Custom Title</text>
+            <textarea class="form-control" style="min-width:75% !important;"></textarea>
+            <div style="text-align: center; margin-top:20px;">
+                <button>Add Fields</button>
+                <button>Reset</button>
+            </div>
+        </div>
+
+        <div style="width: 50%; margin:auto; padding-top:20px;">
+            <table class="table table-bordered">
+                <tr>
+                    <th scope="col">Campaign Name</th>
+                    <th scope="col">Custom Title</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </table>
+        </div>
+        <div class="table-bordered"></div>
+
+        <div style="margin-top: 50px;">
+            <text class="col-md-3" style="font-size: 20px">2. Stock Rule</text>
+            <div class="form-control" style="width:75% !important; height: 250px; overflow: auto;">
+                <h3>SafetyNet Rule</h3>
+                <br>
+                <p>SafetyNet quantity is reduced from the Product Management Stock. Resultant stock is shown on the ecoommerce platform.</p> <br>
+                <text>Enter Value;</text>
+                <input type="text" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 20px;">
+    <div class="col-md-3" style="margin-top: 10px;"></div>
+    <div class="col-md-2 btn-group btn-group-lg">
+        <button type="button" class="btn btn-default" style="background-color: yellow; color: black;">SAVE</button>
+    </div>
+</div>
+

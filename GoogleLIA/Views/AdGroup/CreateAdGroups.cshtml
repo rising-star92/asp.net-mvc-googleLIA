@@ -1,0 +1,72 @@
+﻿@using GoogleLIA.Models
+
+@model AdGroup
+
+@{
+    ViewBag.Title = "CreateAdGroups";
+}
+
+@using (Html.BeginForm("", "", FormMethod.Post))
+{
+    <div class="panel panel-default">
+        <div class="sub-header panel-body list-inline">
+            <span class="glyphicon glyphicon-tasks sub-header-taskicon"></span>
+            <span class="sub-head-text">CREATE AD GROUPS</span>
+            <span class="glyphicon glyphicon-refresh sub-header-taskicon right"></span>
+            <span class="glyphicon glyphicon-chevron-down sub-header-taskicon right"></span>
+        </div>
+
+        <div class="sub-body-content">
+            <div style="display: flex;">
+                <text class="col-md-3" style="font-size: 20px;">Select Campaign</text>
+                @Html.DropDownListFor(m => m.Campaign_Name, new SelectList(Enum.GetValues(typeof(option)).ToString()), new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text class="col-md-3" style="font-size: 20px;">Ad Group Name</text>
+                @Html.TextBoxFor(m => m.Ad_Group_Name, new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text class="col-md-3" style="font-size: 20px;">Bid</text>
+                @Html.TextBoxFor(m => m.Bid, new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text class="col-md-3" style="font-size: 20px">Ad Group Audiences</text>
+                <div class="col-md-2">
+                    @*<select class="selectpicker multi-select" multiple>
+                        <option value="1">1</option>
+                        <option value="12">12</option>
+                        <option value="123">123</option>
+                        <option value="1234">1234</option>
+                        <option value="12345">12345</option>
+                        <option value="123456">123456</option>
+                        <option value="1234567">1234567</option>
+                    </select>*@
+                    @Html.DropDownListFor(m => m.Ad_Group_Audiences, new SelectList(Enum.GetValues(typeof(option)).ToString()), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <div class="col-md-3" style="margin-top: 10px;"></div>
+        <div class="col-md-2 btn-group btn-group-lg">
+            <button type="button" class="btn btn-default" style="background-color: yellow; color: black;">CANCEL</button>
+            <button type="button" class="btn btn-default" style="background-color: yellow; color: black; margin-left: 20px;">NEXT</button>
+        </div>
+    </div>
+}
+
+<style>
+    .multi-select {
+        width: 280px !important;
+        position: relative !important;
+        left: -16px !important;
+    }
+</style>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>

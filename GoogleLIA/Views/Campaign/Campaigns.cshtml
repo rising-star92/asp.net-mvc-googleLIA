@@ -1,0 +1,66 @@
+﻿@if (ViewBag.Message != null)
+{
+
+    <p class="alert alert-success" role="alert">
+        @ViewBag.Message
+    </p>
+}
+
+<div class="panel panel-default">
+    <div class="sub-header panel-body list-inline">
+        <span class="glyphicon glyphicon-tasks sub-header-taskicon"></span>
+        <span class="sub-head-text">CAMPAIGNS DETAILS</span>
+        <span class="glyphicon glyphicon-refresh sub-header-taskicon right"></span>
+        <span class="glyphicon glyphicon-chevron-down sub-header-taskicon right"></span>
+    </div>
+    <div class="sub-body-content">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">S.No</th>
+                    <th scope="col">Campaign Name</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Budget</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">CTR</th>
+                    <th scope="col">Avg.CPC</th>
+                    <th scope="col">Clicks</th>
+                    <th scope="col">Impressions</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Convension</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            @if (Model != null && Model.Count > 0)
+            {
+                <tbody>
+                    @foreach (var m in Model)
+                    {
+                        <tr>
+                            <td>@m.id</td>
+                            <td>@m.campaign_name</td>
+                            <td>@m.start_date</td>
+                            <td>@m.end_date</td>
+                            <td>@m.budget</td>
+                            <td>@m.country</td>
+                            <td>@m.ctr%</td>
+                            <td>@m.cpc</td>
+                            <td>@m.clicks</td>
+                            <td>@m.impressions</td>
+                            <td>@m.cost</td>
+                            <td>@m.conversion</td>
+                            <td>@m.status</td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", new { id = m.id }) |
+                                @Html.ActionLink("Delete", "Delete", new { id = m.id }) |
+                                @Html.ActionLink("Pause", "Pause", new { id = m.id })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            }
+        </table>
+    </div>
+</div>

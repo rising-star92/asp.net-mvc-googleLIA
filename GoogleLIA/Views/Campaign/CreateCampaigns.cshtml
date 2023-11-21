@@ -1,0 +1,105 @@
+﻿@model GoogleLIA.Models.Campaigns
+
+@{
+    ViewBag.Title = "CreateCampaigns";
+}
+
+@if (ViewBag.Message != null)
+{
+
+    <p class="alert alert-success" role="alert">
+        @ViewBag.Message
+    </p>
+}
+
+@using (Html.BeginForm("Create", "Campaign", FormMethod.Post))
+{
+    <div class="panel panel-default">
+        <div class="sub-header panel-body list-inline">
+            <span class="glyphicon glyphicon-tasks sub-header-taskicon"></span>
+            <span class="sub-head-text">CAMPAIGN DETAILS</span>
+            <span class="glyphicon glyphicon-refresh sub-header-taskicon right"></span>
+            <span class="glyphicon glyphicon-chevron-down sub-header-taskicon right"></span>
+        </div>
+
+        <div class="sub-body-content">
+            @*<div style="display: flex;">
+                    @Html.HiddenFor(m => m.id)
+                </div>*@
+
+            <div style="display: flex;">
+                <text style="font-size: 20px; " class="col-md-3">Campaign Name</text>
+                @Html.TextBoxFor(m => m.campaign_name, new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text style="font-size: 20px; " class="col-md-3">Campaign Type</text>
+                @Html.DropDownListFor(m => m.campaign_type, new SelectList(new List<string> { "Shopping" }), new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text style="font-size: 20px; " class="col-md-3">Start Date</text>
+                @Html.TextBoxFor(m => m.start_date, new { @class = "form-control", @type = "date" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text style="font-size: 20px; " class="col-md-3">End Date</text>
+                @Html.TextBoxFor(m => m.end_date, new { @class = "form-control", @type = "date" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text style="font-size: 20px; " class="col-md-3">Budget</text>
+                @Html.TextBoxFor(m => m.budget, new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text style="font-size: 20px; " class="col-md-3">Status</text>
+                @Html.DropDownListFor(m => m.status, new SelectList(new List<string> { "Enabled", "Removed" }), new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text style="font-size: 20px; " class="col-md-3">Country</text>
+                @Html.DropDownListFor(m => m.country, ViewBag.CountryList as SelectList, new { @class = "form-control" })
+            </div>
+
+            <div style="display: flex; margin-top: 50px">
+                <text style="font-size: 20px; " class="col-md-3">Enter Another Location(if required)</text>
+                @Html.DropDownListFor(m => m.location, ViewBag.LocationList as SelectList, new { @class = "form-control", @onkeypress = "keypresshandle(event);" , @type = "search"})
+            </div>
+
+            <div style="display: flex; margin-top: 20px">
+                <div class="col-md-3"></div>
+                <textarea class="form-control" placeholder="Targeted Locations"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <div class="col-md-3" style="margin-top: 10px;"></div>
+        <div class="col-md-2 btn-group btn-group-lg">
+            <button type="button" class="btn btn-default" style="background-color: yellow; color: black;">CANCEL</button>
+            <button type="submit" class="btn btn-default" style="background-color: yellow; color: black; margin-left: 20px;">NEXT</button>
+        </div>
+    </div>
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    function keypresshandle(e) {
+        var location = $('#location').val(); // Assuming the id of your input field is 'location'
+
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            alert("omg you pressed the Enter key. How dare you!");
+            $.ajax({
+                url: '@Url.Action("GetLocations", "Campaign")', // Replace with your Action and Controller
+                type: 'GET',
+                data: { srchStr: location },
+                success: function(result) {
+                    // Handle the result from the server
+                    console.log(result);
+                }
+            });
+        }
+    }
+</script>
