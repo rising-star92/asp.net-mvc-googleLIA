@@ -372,14 +372,14 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\AdGroup\CreateAdGroups.cshtml" />
     <Content Include="Views\AssignProducts\AssignProducts.cshtml" />
-    <Content Include="Views\AdGroup\AdGroups.cshtml" />
     <Content Include="Views\LIA\CustomRules.cshtml" />
     <Content Include="Views\LIA\MapFields.cshtml" />
     <Content Include="Views\Campaign\Edit.cshtml" />
     <Content Include="Views\Campaign\List.cshtml" />
     <Content Include="Views\Setting\Edit.cshtml" />
+    <Content Include="Views\AdGroup\List.cshtml" />
+    <Content Include="Views\AdGroup\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,4 +1,9 @@
-﻿@using GoogleLIA.Models
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using GoogleLIA.Models
 
 @model AdGroup
 
@@ -36,14 +41,14 @@
                 <text class="col-md-3" style="font-size: 20px">Ad Group Audiences</text>
                 <div class="col-md-2">
                     @*<select class="selectpicker multi-select" multiple>
-                        <option value="1">1</option>
-                        <option value="12">12</option>
-                        <option value="123">123</option>
-                        <option value="1234">1234</option>
-                        <option value="12345">12345</option>
-                        <option value="123456">123456</option>
-                        <option value="1234567">1234567</option>
-                    </select>*@
+                            <option value="1">1</option>
+                            <option value="12">12</option>
+                            <option value="123">123</option>
+                            <option value="1234">1234</option>
+                            <option value="12345">12345</option>
+                            <option value="123456">123456</option>
+                            <option value="1234567">1234567</option>
+                        </select>*@
                     @Html.DropDownListFor(m => m.Ad_Group_Audiences, new SelectList(Enum.GetValues(typeof(option)).ToString()), new { @class = "form-control" })
                 </div>
             </div>

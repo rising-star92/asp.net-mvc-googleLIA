@@ -1,4 +1,8 @@
-﻿@using GoogleLIA.Models
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using GoogleLIA.Models
 
 @model AdGroup
 @{
@@ -31,23 +35,23 @@
             </thead>
             <tbody>
                 @*@foreach (var m in AdGroups)
-                {
-                <tr>
-                    <th scope="col">m.id</th>
-                    <th scope="col">m.Campaign_Name</th>
-                    <th scope="col">m.Ad_Group_Name</th>
-                    <th scope="col">m.Clicks</th>
-                    <th scope="col">m.Impressions</th>
-                    <th scope="col">m.CTR</th>
-                    <th scope="col">m.Avg_CPC</th>
-                    <th scope="col">m.Cost</th>
-                    <th scope="col">m.Convension</th>
-                    <th scope="col">m.Cost_Conv.</th>
-                    <th scope="col">m.Conv_Rate</th>
-                    <th scope="col">m.Bid</th>
-                    <th scope="col">m.Ad_Group_Audiences</th>
-                </tr>
-                }*@
+                    {
+                    <tr>
+                        <th scope="col">m.id</th>
+                        <th scope="col">m.Campaign_Name</th>
+                        <th scope="col">m.Ad_Group_Name</th>
+                        <th scope="col">m.Clicks</th>
+                        <th scope="col">m.Impressions</th>
+                        <th scope="col">m.CTR</th>
+                        <th scope="col">m.Avg_CPC</th>
+                        <th scope="col">m.Cost</th>
+                        <th scope="col">m.Convension</th>
+                        <th scope="col">m.Cost_Conv.</th>
+                        <th scope="col">m.Conv_Rate</th>
+                        <th scope="col">m.Bid</th>
+                        <th scope="col">m.Ad_Group_Audiences</th>
+                    </tr>
+                    }*@
             </tbody>
         </table>
     </div>
