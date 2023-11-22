@@ -18,6 +18,7 @@ using static Google.Ads.GoogleAds.V15.Enums.BudgetDeliveryMethodEnum.Types;
 
 using GoogleLIA.Databases;
 using GoogleLIA.Models;
+
 namespace GoogleLIA.Services
 {
     public interface IGoogleService
@@ -25,6 +26,8 @@ namespace GoogleLIA.Services
         bool GetGoolgeCampaigns();
         GCampaign CreateGoogleCampaign(GCampaign campaign);
         bool UpdateGoogleCampaign(GCampaign campaign);
+        bool DeleteGoogleCampaign(string campaignId);
+        bool PauseGoogleCampaign(string campaignId);
     }
 
     public class GoogleService: IGoogleService
@@ -302,6 +305,84 @@ namespace GoogleLIA.Services
                 Id = long.Parse(campaign.campaign_id),
                 StartDate = campaign.start_date.Replace("-", ""),
                 EndDate = campaign.end_date.Replace("-", "")
+            };
+
+            CampaignOperation operation = new CampaignOperation()
+            {
+                Update = campaignToUpdate,
+                UpdateMask = FieldMasks.AllSetFieldsOf(campaignToUpdate)
+            };
+            try
+            {
+                // Update the campaign
+                MutateCampaignsResponse response = campaignService.MutateCampaigns(
+                    customerId.ToString(), new[] { operation });
+
+                // Display the results.
+                foreach (MutateCampaignResult updatedCampaign in response.Results)
+                {
+                    Console.WriteLine($"Campaign with resource ID = " +
+                        $"'{updatedCampaign.ResourceName}' was updated.");
+                }
+
+                ret = true;
+            }
+            catch (GoogleAdsException e)
+            {
+                Console.WriteLine("Failure:");
+                Console.WriteLine($"Message: {e.Message}");
+                Console.WriteLine($"Failure: {e.Failure}");
+                Console.WriteLine($"Request ID: {e.RequestId}");
+                throw;
+            }
+
+            return ret;
+        }
+
+        public bool DeleteGoogleCampaign(string campaignId)
+        {
+            bool ret = false;
+
+            CampaignServiceClient campaignService = _googleAdsClient.GetService(Google.Ads.GoogleAds.Services.V15.CampaignService);
+            CampaignOperation operation = new CampaignOperation()
+            {
+                Remove = ResourceNames.Campaign(customerId, long.Parse(campaignId))
+            };
+
+            try
+            {
+                MutateCampaignsResponse retVal = campaignService.MutateCampaigns(
+                    customerId.ToString(), new CampaignOperation[] { operation });
+
+                foreach (MutateCampaignResult removedCampaign in retVal.Results)
+                {
+                    Console.WriteLine($"Campaign with resource name = '{0}' was removed.",
+                        removedCampaign.ResourceName);
+                }
+
+                ret = true;
+            }
+            catch (GoogleAdsException e)
+            {
+                Console.WriteLine("Failure:");
+                Console.WriteLine($"Message: {e.Message}");
+                Console.WriteLine($"Failure: {e.Failure}");
+                Console.WriteLine($"Request ID: {e.RequestId}");
+                throw;
+            }
+
+            return ret;
+        }
+
+        public bool PauseGoogleCampaign(string campaignId)
+        {
+            bool ret = false;
+
+            CampaignServiceClient campaignService = _googleAdsClient.GetService(Google.Ads.GoogleAds.Services.V15.CampaignService);
+            Campaign campaignToUpdate = new Campaign()
+            {
+                ResourceName = ResourceNames.Campaign(customerId, long.Parse(campaignId)),
+                Status = CampaignStatus.Paused
             };
 
             CampaignOperation operation = new CampaignOperation()

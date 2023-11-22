@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using GoogleLIA.Databases;
 using GoogleLIA.Models;
 
@@ -11,7 +10,8 @@ namespace GoogleLIA.Services
     {
         List<GCampaign> GetCampaignsList();
         GCampaign GetCampaign(int id);
-        GCampaign UpdateCampaign(GCampaign item);
+        GCampaign UpdateCampaign(int id, GCampaign item);
+        bool DeleteCampaign(int id);
     }
 
     public class CampaignService : ICampaignService
@@ -41,9 +41,9 @@ namespace GoogleLIA.Services
             return ret;
         }
 
-        public GCampaign UpdateCampaign(GCampaign item)
+        public GCampaign UpdateCampaign(int id, GCampaign item)
         {
-            var _campaign = _context.Campaigns.FirstOrDefault(x => x.id == item.id);
+            var _campaign = _context.Campaigns.FirstOrDefault(x => x.id == id);
 
             if (_campaign != null)
             {
@@ -59,6 +59,25 @@ namespace GoogleLIA.Services
             _context.SaveChanges();
 
             return _campaign;
+        }
+
+        public bool DeleteCampaign(int id)
+        {
+            bool ret = false;
+            var _campaign = _context.Campaigns.FirstOrDefault(x => x.id == id);
+
+            if (_campaign != null)
+            {
+                _context.Campaigns.Remove(_campaign);
+                _context.SaveChanges();
+                ret = true;
+            }
+            else
+            {
+                ret = false;
+            }
+
+            return ret;
         }
     }
 }

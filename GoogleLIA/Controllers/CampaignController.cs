@@ -1,10 +1,7 @@
-﻿using System;
-using System.Web.Mvc;
-using System.Linq;
-using GoogleLIA.Models;
-using System.Data;
+﻿using System.Web.Mvc;
 using System.Collections.Generic;
 using GoogleLIA.Services;
+using GoogleLIA.Models;
 
 namespace GoogleLIA.Controllers
 {
@@ -75,114 +72,62 @@ namespace GoogleLIA.Controllers
         }
 
         [HttpPut]
-        public ActionResult Update(GCampaign model)
+        public ActionResult Update(int id, GCampaign model)
         {
             var ret = false;
 
             if (ModelState.IsValid)
             {
-                GCampaign gCampaign = _campaignService.UpdateCampaign(model);
+                GCampaign gCampaign = _campaignService.UpdateCampaign(id, model);
                 if (gCampaign != null)
                 {
                     ret = _googleService.UpdateGoogleCampaign(gCampaign);
                 }
             }
 
-            ViewBag.Message = ret ? "Success Updating Campaign" : "Failed Updating Campaign";
+            ViewBag.Message = ret ?
+                "Success Updating Campaign" :
+                "Failed Updating Campaign";
 
             return View("Edit", model);
         }
 
-        //[HttpGet]
-        //public ActionResult Delete(int id)
-        //{
-        //    var data = _dbContext.Campaigns.FirstOrDefault(x => x.id == id);
-        //    var campaign_id = _dbContext.Campaigns.FirstOrDefault(x => x.id == id).campaign_id;
+        [HttpDelete]
+        public ActionResult Delete(int id)
+        {
+            GCampaign gCampaign = _campaignService.GetCampaign(id);
+            var campaignId = gCampaign.campaign_id;
 
-        //    CampaignServiceClient campaignService = client.GetService(Services.V15.CampaignService);
-        //    CampaignOperation operation = new CampaignOperation()
-        //    {
-        //        Remove = ResourceNames.Campaign(customerId, long.Parse(campaign_id))
-        //    };
+            var ret = _googleService.DeleteGoogleCampaign(campaignId);
 
-        //    try
-        //    {
-        //        // Remove the campaign.
-        //        MutateCampaignsResponse retVal = campaignService.MutateCampaigns(
-        //            customerId.ToString(), new CampaignOperation[] { operation });
+            if (ret)
+            {
+                ret = _campaignService.DeleteCampaign(id);
+            }
 
-        //        // Display the results.
-        //        foreach (MutateCampaignResult removedCampaign in retVal.Results)
-        //        {
-        //            Console.WriteLine($"Campaign with resource name = '{0}' was removed.",
-        //                removedCampaign.ResourceName);
-        //        }
-        //    }
-        //    catch (GoogleAdsException e)
-        //    {
-        //        Console.WriteLine("Failure:");
-        //        Console.WriteLine($"Message: {e.Message}");
-        //        Console.WriteLine($"Failure: {e.Failure}");
-        //        Console.WriteLine($"Request ID: {e.RequestId}");
-        //        throw;
-        //    }
+            ViewBag.Message = ret ?
+                "Success Deleting Campaign" : 
+                "Failed Deleting Campaign";
 
-        //    _dbContext.Campaigns.Remove(data);
-        //    _dbContext.SaveChanges();
-        //    ViewBag.Messsage = "Record Delete Successfully";
-        //    return RedirectToAction("Campaigns");
-        //}
+            return RedirectToAction("List");
+        }
 
-        //[HttpGet]
-        //public ActionResult Pause(Campaigns item)
-        //{
-        //    var data = _dbContext.Campaigns.FirstOrDefault(x => x.id == item.id);
-        //    var campaign_id = _dbContext.Campaigns.FirstOrDefault(x => x.id == item.id).campaign_id;
+        [HttpPost]
+        public ActionResult Pause(GCampaign gCampaign)
+        {
+            var ret = _googleService.PauseGoogleCampaign(gCampaign.campaign_id);
 
-        //    CampaignServiceClient campaignService = client.GetService(Services.V15.CampaignService);
-        //    Campaign campaignToUpdate = new Campaign()
-        //    {
-        //        ResourceName = ResourceNames.Campaign(customerId, long.Parse(campaign_id)),
-        //        Status = CampaignStatus.Paused
-        //    };
+            if (ret)
+            {
+                gCampaign.status = "Paused";
+                gCampaign = _campaignService.UpdateCampaign(gCampaign.id, gCampaign);
+            }
 
-        //    CampaignOperation operation = new CampaignOperation()
-        //    {
-        //        Update = campaignToUpdate,
-        //        UpdateMask = FieldMasks.AllSetFieldsOf(campaignToUpdate)
-        //    };
-        //    try
-        //    {
-        //        // Update the campaign
-        //        MutateCampaignsResponse response = campaignService.MutateCampaigns(
-        //            customerId.ToString(), new[] { operation });
-            
-        //        // Display the results.
-        //        foreach (MutateCampaignResult updatedCampaign in response.Results)
-        //        {
-        //            Console.WriteLine($"Campaign with resource ID = " +
-        //                $"'{updatedCampaign.ResourceName}' was updated.");
-        //        }
-        //    }
-        //    catch (GoogleAdsException e)
-        //    {
-        //        Console.WriteLine("Failure:");
-        //        Console.WriteLine($"Message: {e.Message}");
-        //        Console.WriteLine($"Failure: {e.Failure}");
-        //        Console.WriteLine($"Request ID: {e.RequestId}");
-        //        throw;
-        //    }
+            ViewBag.Message = ret && gCampaign.status == "Paused" ? 
+                "Success Pausing Campaign" : 
+                "Failed Pausing Campaign";
 
-        //    if (data.status == "Enabled")
-        //    {
-        //        data.status = "Paused";
-        //        _dbContext.SaveChanges();
-        //    }
-
-        //    //_dbContext.Campaigns.Remove(data);
-        //    //_dbContext.SaveChanges();
-        //    //ViewBag.Messsage = "Record Delete Successfully";
-        //    return RedirectToAction("Campaigns");
-        //}
+            return RedirectToAction("List");
+        }
     }
 }
