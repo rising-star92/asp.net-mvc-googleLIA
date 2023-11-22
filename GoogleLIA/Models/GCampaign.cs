@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GoogleLIA.Models
 {
     [Table("GoogleCampaign")]
-    public class Campaigns
+    public class GCampaign
     {
         [Key]
         public int id { get; set; }

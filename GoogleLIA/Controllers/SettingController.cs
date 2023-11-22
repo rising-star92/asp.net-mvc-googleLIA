@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using GoogleLIA.Models;
-using GoogleLIA.DBContext;
+using GoogleLIA.Databases;
 using Google.Ads.GoogleAds.V14.Services;
 using Google.Ads.Gax.Util;
 using Google.Ads.GoogleAds.V14.Resources;
@@ -14,20 +14,20 @@ namespace GoogleLIA.Controllers
 {
     public class SettingController : Controller
     {
-        private DBcontext _dbContext;
+        private AdsDBContext _dbContext;
         private object customerId;
         private GoogleAdsClient client;
 
         public SettingController()
         {
-            _dbContext = new DBcontext();
+            _dbContext = new AdsDBContext();
         }
 
         public ActionResult Update(Setting item)
         {
             //The code example below shows how to use ListMerchantCenterLinks to request all links for customer_id.
-            MerchantCenterLinkServiceClient merchantCenterLinkService = client.GetService(Services.V14.MerchantCenterLinkService);
-            ListMerchantCenterLinksResponse response = merchantCenterLinkService.ListMerchantCenterLinks(customerId.ToString());
+            //MerchantCenterLinkServiceClient merchantCenterLinkService = client.GetService(Services.V15.MerchantCenterLinkService);
+            //ListMerchantCenterLinksResponse response = merchantCenterLinkService.ListMerchantCenterLinks(customerId.ToString());
             //UpdateMerchantCenterLinkStatus();
 
             var setting = _dbContext.Settings.FirstOrDefault();

@@ -8,7 +8,7 @@ using System.Web;
 namespace GoogleLIA.Models
 {
     [Table("Countrylist")]
-    public class Countrylist
+    public class Country
     {
         [Key]
         public int id { get; set; }

@@ -17,7 +17,7 @@ namespace GoogleLIA
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Campaign", action = "Campaigns", id = UrlParameter.Optional }
+                defaults: new { controller = "Campaign", action = "List", id = UrlParameter.Optional }
             );
         }
     }

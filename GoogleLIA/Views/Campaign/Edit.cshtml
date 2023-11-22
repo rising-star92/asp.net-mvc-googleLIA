@@ -1,7 +1,12 @@
-﻿@model GoogleLIA.Models.Campaigns
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@model GoogleLIA.Models.GCampaign
 
 @{
-    ViewBag.Title = "CreateCampaigns";
+    ViewBag.Title = "Edit Campaign";
 }
 
 @if (ViewBag.Message != null)
@@ -12,7 +17,7 @@
     </p>
 }
 
-@using (Html.BeginForm("Create", "Campaign", FormMethod.Post))
+@using (Html.BeginForm("Create", "GCampaign", FormMethod.Post))
 {
     <div class="panel panel-default">
         <div class="sub-header panel-body list-inline">
@@ -64,7 +69,7 @@
 
             <div style="display: flex; margin-top: 50px">
                 <text style="font-size: 20px; " class="col-md-3">Enter Another Location(if required)</text>
-                @Html.DropDownListFor(m => m.location, ViewBag.LocationList as SelectList, new { @class = "form-control", @onkeypress = "keypresshandle(event);" , @type = "search"})
+                
             </div>
 
             <div style="display: flex; margin-top: 20px">
