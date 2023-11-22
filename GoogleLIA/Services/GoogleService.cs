@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-
 using Google.Ads.Gax.Examples;
 using Google.Ads.Gax.Util;
 using Google.Ads.GoogleAds.Config;
@@ -15,7 +14,6 @@ using static Google.Ads.GoogleAds.V15.Resources.Campaign.Types;
 using static Google.Ads.GoogleAds.V15.Enums.AdvertisingChannelTypeEnum.Types;
 using static Google.Ads.GoogleAds.V15.Enums.CampaignStatusEnum.Types;
 using static Google.Ads.GoogleAds.V15.Enums.BudgetDeliveryMethodEnum.Types;
-
 using GoogleLIA.Databases;
 using GoogleLIA.Models;
 
