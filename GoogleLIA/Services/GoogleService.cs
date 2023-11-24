@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-
 using Google.Ads.Gax.Examples;
 using Google.Ads.Gax.Util;
 using Google.Ads.GoogleAds.Config;
@@ -15,7 +14,6 @@ using static Google.Ads.GoogleAds.V15.Resources.Campaign.Types;
 using static Google.Ads.GoogleAds.V15.Enums.AdvertisingChannelTypeEnum.Types;
 using static Google.Ads.GoogleAds.V15.Enums.CampaignStatusEnum.Types;
 using static Google.Ads.GoogleAds.V15.Enums.BudgetDeliveryMethodEnum.Types;
-
 using GoogleLIA.Databases;
 using GoogleLIA.Models;
 
@@ -33,10 +31,14 @@ namespace GoogleLIA.Services
     public class GoogleService: IGoogleService
     {
         private readonly AdsDBContext _context;
+        private readonly GoogleAdsClient _googleAdsClient;
 
-        private GoogleAdsClient _googleAdsClient;
         private readonly long customerId = long.Parse(ConfigurationManager.AppSettings["CustomerId"]);
+<<<<<<< HEAD
         private readonly GoogleAdsConfig _config = new GoogleAdsConfig()
+=======
+        private readonly GoogleAdsConfig googleAdsConfig = new GoogleAdsConfig()
+>>>>>>> 7fac62f67822f27a44f067af7e4b0840c8ce48a9
         {
             DeveloperToken = ConfigurationManager.AppSettings["DeveloperToken"],
             OAuth2ClientId = ConfigurationManager.AppSettings["OAuth2ClientId"],
@@ -48,7 +50,7 @@ namespace GoogleLIA.Services
 
         public GoogleService(AdsDBContext context)
         {
-            _googleAdsClient = new GoogleAdsClient(_config);
+            _googleAdsClient = new GoogleAdsClient(config: googleAdsConfig);
             _context = context;
         }
     

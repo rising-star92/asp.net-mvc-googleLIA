@@ -1,4 +1,9 @@
-﻿@using GoogleLIA.Models
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using GoogleLIA.Models
 
 @model Setting
 
@@ -43,7 +48,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    @Html.TextBoxFor(m => m.Base_url, new {@class = "form-control" })
+                    @Html.TextBoxFor(m => m.Base_url, new { @class = "form-control" })
                 </div>
             </div>
 

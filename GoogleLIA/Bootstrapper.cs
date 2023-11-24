@@ -31,6 +31,7 @@ namespace GoogleLIA
         container.RegisterType<IGoogleService, GoogleService>();
         container.RegisterType<ICampaignService, CampaignService>();
         container.RegisterType<ILocationService, LocationService>();
+        container.RegisterType<ISettingService, SettingService>();
 
         container.RegisterInstance<AdsDBContext>(dbContext);
 
