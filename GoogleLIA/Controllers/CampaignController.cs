@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using GoogleLIA.Services;
 using GoogleLIA.Models;
-using GoogleLIA.Databases;
 using System.Linq;
-using System.Dynamic;
 
 namespace GoogleLIA.Controllers
 {
@@ -13,18 +11,15 @@ namespace GoogleLIA.Controllers
         private readonly ICampaignService _campaignService;
         private readonly IGoogleService _googleService;
         private readonly ILocationService _locationService;
-        private readonly AdsDBContext _adsDBContext;
 
         public CampaignController(
             ICampaignService campaignService,
             IGoogleService googleService,
-            ILocationService locationService,
-            AdsDBContext adsDBContext)
+            ILocationService locationService)
         {
             _campaignService = campaignService;
             _googleService = googleService;
             _locationService = locationService;
-            _adsDBContext = adsDBContext;
         }
 
         public ActionResult List()
@@ -65,10 +60,7 @@ namespace GoogleLIA.Controllers
         [HttpPost]
         public ActionResult Create(GCampaign model)
         {
-            //dynamic mymodel = new ExpandoObject(); 
-            //mymodel.GCampaign = 
-            string[] countrylist = _adsDBContext.Countries.AsEnumerable().Select(s => s.country_name).Distinct().ToArray();
-            ViewBag.CountryList = new SelectList(countrylist);
+            ViewBag.CountryList = new SelectList(_locationService.GetCountries());
             ViewBag.LocationList = new List<SelectListItem>
                 {
                     new SelectListItem { Text = "", Value = "" }
@@ -128,9 +120,8 @@ namespace GoogleLIA.Controllers
 
         public ActionResult Pause(int id )
         {
-            var gCampaign = _adsDBContext.Campaigns.FirstOrDefault(x => x.id == id);
-            var campaign_id = _adsDBContext.Campaigns.FirstOrDefault(x => x.id == id).campaign_id;
-            var ret = _googleService.PauseGoogleCampaign(campaign_id);
+            var gCampaign = _campaignService.GetCampaign(id);
+            var ret = _googleService.PauseGoogleCampaign(gCampaign.campaign_id);
 
             if (ret)
             {
@@ -146,9 +137,9 @@ namespace GoogleLIA.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetLocations(string srchStr, string country)
+        public ActionResult GetLocations(string country, string srchStr)
         {
-            var locationlist = _adsDBContext.Locations.Where(x => x.canonical_name.Contains(country) && (x.canonical_name.Contains(srchStr) || x.criteria_id.Contains(srchStr) || x.name.Contains(srchStr) || x.parent_id.Contains(srchStr) || x.country_code.Contains(srchStr))).AsEnumerable().Select(s => s.canonical_name).Distinct().Take(10).ToArray();
+            var locationlist = _locationService.GetLocations(country, srchStr);
             var result = locationlist.Select((location, index) => new { id = index, text = location }).ToArray();
             ViewBag.LocationList = result;
             return Json(new { results = result });

@@ -10,6 +10,7 @@ namespace GoogleLIA.Services
     public interface ILocationService
     {
         List<string> GetCountries();
+        List<string> GetLocations(string country, string srchStr);
     }
 
     public class LocationService : ILocationService
@@ -30,6 +31,25 @@ namespace GoogleLIA.Services
                 .ToList();
 
             return countries;
+        }
+
+        public List<string> GetLocations(string country, string srchStr)
+        {
+            var locationlist = _dbContext.Locations
+                .Where(x => 
+                    x.canonical_name.Contains(country) &&
+                    (x.canonical_name.Contains(srchStr) ||
+                    x.criteria_id.Contains(srchStr) ||
+                    x.name.Contains(srchStr) ||
+                    x.parent_id.Contains(srchStr) ||
+                    x.country_code.Contains(srchStr)))
+                .AsEnumerable()
+                .Select(s => s.canonical_name)
+                .Distinct()
+                .Take(10)
+                .ToList();
+
+            return locationlist;
         }
     }
 }
