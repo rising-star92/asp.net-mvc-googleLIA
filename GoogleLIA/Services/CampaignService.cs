@@ -51,7 +51,8 @@ namespace GoogleLIA.Services
                 _campaign.start_date = item.start_date;
                 _campaign.end_date = item.end_date;
                 _campaign.budget = item.budget;
-                _campaign.country = item.country;
+                _campaign.location = item.location;
+                _campaign.status = item.status;
             }
 
             _context.Entry(_campaign).State = EntityState.Modified;

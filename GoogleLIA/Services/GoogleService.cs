@@ -36,7 +36,7 @@ namespace GoogleLIA.Services
 
         private GoogleAdsClient _googleAdsClient;
         private readonly long customerId = long.Parse(ConfigurationManager.AppSettings["CustomerId"]);
-        private GoogleAdsConfig _config = new GoogleAdsConfig()
+        private readonly GoogleAdsConfig _config = new GoogleAdsConfig()
         {
             DeveloperToken = ConfigurationManager.AppSettings["DeveloperToken"],
             OAuth2ClientId = ConfigurationManager.AppSettings["OAuth2ClientId"],
@@ -88,35 +88,36 @@ namespace GoogleLIA.Services
                         {
                             var campaignId = googleAdsRow.Campaign.Id.ToString();
 
-                            string country_code = "";
-                            string countryname = "";
+                            List<string> countrynames = new List<string>();
+                            string defaultcountryval = "All countries and territories";
 
                             string query2 = $"SELECT " +
                                 $"campaign_criterion.campaign, " +
-                                $"campaign_criterion.location.geo_target_constant, " +
-                                $"campaign_criterion.proximity.address.country_code, " +
-                                $"campaign_criterion.proximity.geo_point.longitude_in_micro_degrees, " +
-                                $"campaign_criterion.proximity.geo_point.latitude_in_micro_degrees, " +
-                                $"campaign_criterion.proximity.radius, " +
-                                $"campaign_criterion.negative " +
+                                $"campaign_criterion.location.geo_target_constant " +
                                 $"FROM campaign_criterion " +
                                 $"WHERE " +
-                                $"campaign_criterion.campaign = '{googleAdsRow.Campaign.ResourceName}' " +
-                                $"AND campaign_criterion.type IN (LOCATION, PROXIMITY)";
+                                $"campaign_criterion.campaign = '{googleAdsRow.Campaign.ResourceName}'";
 
-                            googleAdsServiceClient.SearchStream(customerId.ToString(), query2,
-                                delegate (SearchGoogleAdsStreamResponse res)
+                            googleAdsServiceClient.SearchStream(customerId.ToString(), query2, delegate (SearchGoogleAdsStreamResponse res)
+                            {
+                                foreach (GoogleAdsRow r in res.Results)
                                 {
-                                    foreach (GoogleAdsRow r in res.Results)
+                                    if (r.CampaignCriterion != null && r.CampaignCriterion.Location != null)
                                     {
                                         var loc = r.CampaignCriterion.Location.GeoTargetConstant;
                                         var loc_code = loc.Split('/')[1];
-                                        country_code = _context.Locations.FirstOrDefault(x =>
-                                            (x.parent_id == loc_code) || (x.criteria_id == loc_code)).country_code;
-                                        countryname = _context.Countries.FirstOrDefault(x => x.country_code == country_code).country_name;
+                                        var location = _context.Locations.FirstOrDefault(x => (x.criteria_id == loc_code));
+                                        if (location != null)
+                                        {
+                                            countrynames.Add(location.canonical_name);  // Add the country name to the list
+                                        }
                                     }
                                 }
-                            );
+                            if (countrynames.ToArray().Length == 0)
+                                {
+                                    countrynames.Add(defaultcountryval);
+                                }
+                            });
 
                             var campaigndata = _context.Campaigns.FirstOrDefault(x => x.campaign_id == campaignId);
 
@@ -136,7 +137,7 @@ namespace GoogleLIA.Services
                                     cost = googleAdsRow.Metrics.CostMicros / 1000000f, // Assuming cost_micros is of type long
                                     conversion = (int)googleAdsRow.Metrics.Conversions, // Assuming conversions is of type long
                                     status = googleAdsRow.Campaign.Status.ToString(), // Assuming Status is of type enum
-                                    country = countryname
+                                    location = Newtonsoft.Json.JsonConvert.SerializeObject(countrynames)
                                 });
 
                                 _context.SaveChanges();
@@ -216,7 +217,7 @@ namespace GoogleLIA.Services
                             Campaign = campaignResourceName,
                             Location = new LocationInfo()
                             {
-                                GeoTargetConstant = ResourceNames.GeoTargetConstant(2480)
+                                GeoTargetConstant = ResourceNames.GeoTargetConstant(2048)
                             }
                         };
 
@@ -252,43 +253,6 @@ namespace GoogleLIA.Services
                 Console.WriteLine($"Request ID: {e.RequestId}");
                 throw;
             }
-
-            // Create the location criterion.
-            //CampaignCriterion campaignCriterion = new CampaignCriterion()
-            //{
-            //    Campaign = ResourceNames.Campaign(customerId, campaign.Id),
-            //    Location = new LocationInfo()
-            //    {
-            //        GeoTargetConstant = ResourceNames.GeoTargetConstant(2840),
-            //    },
-            //};
-
-            //CampaignCriterionOperation operation = new CampaignCriterionOperation()
-            //{
-            //    Create = campaignCriterion
-            //};
-
-            //try
-            //{
-            //    // Add the campaign criterion.
-            //    MutateCampaignCriteriaResponse response =
-            //        campaignCriterionService.MutateCampaignCriteria(customerId.ToString(), new[] { operation });
-
-            //    // Display the results.
-            //    foreach (MutateCampaignCriterionResult criterionResult in response.Results)
-            //    {
-            //        Console.WriteLine("Created campaign criterion with resource name '{0}'.",
-            //            criterionResult.ResourceName);
-            //    }
-            //}
-            //catch (GoogleAdsException e)
-            //{
-            //    Console.WriteLine("Failure:");
-            //    Console.WriteLine($"Message: {e.Message}");
-            //    Console.WriteLine($"Failure: {e.Failure}");
-            //    Console.WriteLine($"Request ID: {e.RequestId}");
-            //    throw;
-            //}
 
             return campaign;
         }

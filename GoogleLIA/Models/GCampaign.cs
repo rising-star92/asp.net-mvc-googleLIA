@@ -18,7 +18,6 @@ namespace GoogleLIA.Models
         public string start_date { get; set; }
         public string end_date { get; set; }
         public double budget { get; set; }
-        public string country { get; set; }
         public string location { get; set; }
         public double ctr { get; set; }
         public double cpc { get; set; }
@@ -27,5 +26,8 @@ namespace GoogleLIA.Models
         public double cost { get; set; }
         public int conversion { get; set; }
         public string status { get; set; }
+
+        [NotMapped]
+        public string country { get; set; }
     }
 }
