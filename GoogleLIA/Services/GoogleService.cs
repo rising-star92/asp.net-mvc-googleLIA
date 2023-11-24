@@ -34,11 +34,7 @@ namespace GoogleLIA.Services
         private readonly GoogleAdsClient _googleAdsClient;
 
         private readonly long customerId = long.Parse(ConfigurationManager.AppSettings["CustomerId"]);
-<<<<<<< HEAD
-        private readonly GoogleAdsConfig _config = new GoogleAdsConfig()
-=======
         private readonly GoogleAdsConfig googleAdsConfig = new GoogleAdsConfig()
->>>>>>> 7fac62f67822f27a44f067af7e4b0840c8ce48a9
         {
             DeveloperToken = ConfigurationManager.AppSettings["DeveloperToken"],
             OAuth2ClientId = ConfigurationManager.AppSettings["OAuth2ClientId"],
