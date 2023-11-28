@@ -90,7 +90,7 @@
         $('#mySelect2').select2({
             ajax: {
                 url: '@Url.Action("GetLocations", "Campaign")',
-                type: 'GET',
+                type: 'POST',
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {

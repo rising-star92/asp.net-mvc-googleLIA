@@ -17,7 +17,7 @@
     </p>
 }
 
-@using (Html.BeginForm("Update", "Campaign", FormMethod.Post))
+@using (Html.BeginForm("Update", "Campaign", new {id = @Model.id}, FormMethod.Post))
 {
     <div class="panel panel-default">
         <div class="sub-header panel-body list-inline">
@@ -90,7 +90,7 @@
         $('#mySelect2').select2({
             ajax: {
                 url: '@Url.Action("GetLocations", "Campaign")',
-                type: 'GET',
+                type: 'POST',
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {

@@ -143,7 +143,7 @@ namespace GoogleLIA.Controllers
             return RedirectToAction("List");
         }
 
-        [HttpGet]
+        [HttpPost]
         public ActionResult GetLocations(string country, string srchStr)
         {
             var locationlist = _locationService.GetLocations(country, srchStr);
