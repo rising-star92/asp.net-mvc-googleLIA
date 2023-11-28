@@ -36,7 +36,7 @@ namespace GoogleLIA.Controllers
             return View();
         }
 
-        public ActionResult Edit(int id = -1)
+        public ActionResult Create()
         {
             var countries = _locationService.GetCountries();
             ViewBag.CountryList = new SelectList(countries);
@@ -46,22 +46,26 @@ namespace GoogleLIA.Controllers
                 new SelectListItem { Text = "", Value = ""}
             };
 
+            return View();
+        }
 
-            if (id < 0)
+        public ActionResult Edit(int id)
+        {
+            var countries = _locationService.GetCountries();
+            ViewBag.CountryList = new SelectList(countries);
+
+            ViewBag.LocationList = new List<SelectListItem>
             {
-                return View();
-            }
-            else
-            {
-                GCampaign editItem = _campaignService.GetCampaign(id);
-                return View(editItem);
-            }
+                new SelectListItem { Text = "", Value = ""}
+            };
+
+            GCampaign editItem = _campaignService.GetCampaign(id);
+            return View(editItem);
         }
 
         [HttpPost]
         public async Task<ActionResult> Create(GCampaign model)
         {
-
 
             ViewBag.CountryList = new SelectList(_locationService.GetCountries());
             ViewBag.LocationList = new List<SelectListItem>
@@ -81,7 +85,7 @@ namespace GoogleLIA.Controllers
             return RedirectToAction("List");
         }
 
-        [HttpPut]
+        [HttpPost]
         public async Task<ActionResult> Update(int id, GCampaign model)
         {
             var ret = false;

@@ -6,7 +6,7 @@
 @model GoogleLIA.Models.GCampaign
 
 @{
-    ViewBag.Title = "Edit Campaign";
+    ViewBag.Title = "Create Campaign";
 }
 
 @if (ViewBag.Message != null)
@@ -17,7 +17,7 @@
     </p>
 }
 
-@using (Html.BeginForm("Update", "Campaign", FormMethod.Post))
+@using (Html.BeginForm("Create", "Campaign", FormMethod.Post))
 {
     <div class="panel panel-default">
         <div class="sub-header panel-body list-inline">
@@ -102,7 +102,7 @@
                 },
                 processResults: function (data) {
                     console.log("!!!!!", data.results);
-                    
+
                     return {
                         results: data.results
                     };

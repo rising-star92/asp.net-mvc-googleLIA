@@ -380,6 +380,7 @@
     <Content Include="Views\Setting\Edit.cshtml" />
     <Content Include="Views\AdGroup\List.cshtml" />
     <Content Include="Views\AdGroup\Edit.cshtml" />
+    <Content Include="Views\Campaign\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
