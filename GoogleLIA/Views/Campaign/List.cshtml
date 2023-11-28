@@ -49,7 +49,7 @@
                             <td>@m.start_date</td>
                             <td>@m.end_date</td>
                             <td>@m.budget</td>
-                            <td>@m.location</td>
+                            <td>@string.Join(" | ", Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(m.location))</td>
                             <td>@m.ctr%</td>
                             <td>@m.cpc</td>
                             <td>@m.clicks</td>

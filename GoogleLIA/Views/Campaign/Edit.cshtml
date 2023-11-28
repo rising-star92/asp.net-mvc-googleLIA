@@ -102,6 +102,7 @@
                 },
                 processResults: function (data) {
                     console.log("!!!!!", data.results);
+                    
                     return {
                         results: data.results
                     };
@@ -119,8 +120,23 @@
         $('#mySelect2').change(function () {
             var selectedLocations = $.map($(this).find('option:selected'), function (option) {
                 return option.text;
-            }).join(', ');
-            $('#myTextbox').val(selectedLocations);
+            });
+            $('#myTextbox').val(selectedLocations.join(', '));
+
+            $.ajax({
+                url: '@Url.Action("GetGeoTargetCodeList", "Campaign")',
+                type: 'POST',
+                traditional: true,
+                data: { locations: selectedLocations },
+                success: function (response) {
+                    // handle success
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    // handle error
+                    console.error(error);
+                }
+            });
         });
     });
 </script>

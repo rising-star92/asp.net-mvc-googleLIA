@@ -11,6 +11,7 @@ namespace GoogleLIA.Services
     {
         List<string> GetCountries();
         List<string> GetLocations(string country, string srchStr);
+        List<string> GetGeoTargetCodeList(List<string> locations);
     }
 
     public class LocationService : ILocationService
@@ -29,7 +30,6 @@ namespace GoogleLIA.Services
                 .Select(s => s.country_name)
                 .Distinct()
                 .ToList();
-
             return countries;
         }
 
@@ -46,10 +46,25 @@ namespace GoogleLIA.Services
                 .AsEnumerable()
                 .Select(s => s.canonical_name)
                 .Distinct()
-                .Take(10)
+                .Take(30)
                 .ToList();
 
             return locationlist;
+        }
+
+        public List<string> GetGeoTargetCodeList(List<string> locations)
+        {
+            List<string> geoTargetCodeList = new List<string>();
+
+            foreach (var location in locations)
+            {
+                var geotargetcode = _dbContext.Locations.Where(x => x.canonical_name == location).FirstOrDefault()?.criteria_id;
+                if (geotargetcode != null)
+                {
+                    geoTargetCodeList.Add(geotargetcode);
+                }
+            }
+            return geoTargetCodeList;
         }
     }
 }

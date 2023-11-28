@@ -16,16 +16,17 @@ using static Google.Ads.GoogleAds.V15.Enums.CampaignStatusEnum.Types;
 using static Google.Ads.GoogleAds.V15.Enums.BudgetDeliveryMethodEnum.Types;
 using GoogleLIA.Databases;
 using GoogleLIA.Models;
+using System.Threading.Tasks;
 
 namespace GoogleLIA.Services
 {
     public interface IGoogleService
     {
-        bool GetGoolgeCampaigns();
-        GCampaign CreateGoogleCampaign(GCampaign campaign);
-        bool UpdateGoogleCampaign(GCampaign campaign);
-        bool DeleteGoogleCampaign(string campaignId);
-        bool PauseGoogleCampaign(string campaignId);
+        Task<bool> GetGoolgeCampaignsAsync();
+        Task<GCampaign> CreateGoogleCampaignAsync(GCampaign campaign, List<string> GeoTargetlist);
+        Task<bool> UpdateGoogleCampaignAsync(GCampaign campaign);
+        Task<bool> DeleteGoogleCampaignAsync(string campaignId);
+        Task<bool> PauseGoogleCampaignAsync(string campaignId);
     }
 
     public class GoogleService: IGoogleService
@@ -47,12 +48,13 @@ namespace GoogleLIA.Services
         public GoogleService(AdsDBContext context)
         {
             _googleAdsClient = new GoogleAdsClient(config: googleAdsConfig);
-            _context = context;
+            _context = new AdsDBContext();
         }
     
-        public bool GetGoolgeCampaigns()
+        public async Task<bool> GetGoolgeCampaignsAsync()
         {
             bool ret = false;
+            var campaigns = new List<GCampaign>();
 
             GoogleAdsServiceClient googleAdsServiceClient = _googleAdsClient.GetService(Google.Ads.GoogleAds.Services.V15.GoogleAdsService);
 
@@ -79,8 +81,8 @@ namespace GoogleLIA.Services
             try
             {
                 // Issue a search request.
-                googleAdsServiceClient.SearchStream(customerId.ToString(), query1,
-                    delegate (SearchGoogleAdsStreamResponse resp)
+                await googleAdsServiceClient.SearchStreamAsync(customerId.ToString(), query1,
+                    async delegate (SearchGoogleAdsStreamResponse resp)
                     {
                         foreach (GoogleAdsRow googleAdsRow in resp.Results)
                         {
@@ -96,26 +98,36 @@ namespace GoogleLIA.Services
                                 $"WHERE " +
                                 $"campaign_criterion.campaign = '{googleAdsRow.Campaign.ResourceName}'";
 
-                            googleAdsServiceClient.SearchStream(customerId.ToString(), query2, delegate (SearchGoogleAdsStreamResponse res)
+                            try
                             {
-                                foreach (GoogleAdsRow r in res.Results)
+                                await googleAdsServiceClient.SearchStreamAsync(customerId.ToString(), query2, delegate (SearchGoogleAdsStreamResponse res)
                                 {
-                                    if (r.CampaignCriterion != null && r.CampaignCriterion.Location != null)
+                                    foreach (GoogleAdsRow r in res.Results)
                                     {
-                                        var loc = r.CampaignCriterion.Location.GeoTargetConstant;
-                                        var loc_code = loc.Split('/')[1];
-                                        var location = _context.Locations.FirstOrDefault(x => (x.criteria_id == loc_code));
-                                        if (location != null)
+                                        if (r.CampaignCriterion != null && r.CampaignCriterion.Location != null)
                                         {
-                                            countrynames.Add(location.canonical_name);  // Add the country name to the list
+                                            var loc = r.CampaignCriterion.Location.GeoTargetConstant;
+                                            var loc_code = loc.Split('/')[1];
+                                            var location = _context.Locations.FirstOrDefault(x => x.criteria_id == loc_code);
+                                            if (location != null)
+                                            {
+                                                countrynames.Add(location.canonical_name);  // Add the country name to the list
+                                            }
                                         }
                                     }
-                                }
-                            if (countrynames.ToArray().Length == 0)
-                                {
-                                    countrynames.Add(defaultcountryval);
-                                }
-                            });
+                                    if (countrynames.ToArray().Length == 0)
+                                    {
+                                        countrynames.Add(defaultcountryval);
+                                    }
+                                });
+                            }
+                            catch (GoogleAdsException e)
+                            {
+                                Console.WriteLine("Failure:");
+                                Console.WriteLine($"Message: {e.Message}");
+                                Console.WriteLine($"Failure: {e.Failure}");
+                                Console.WriteLine($"Request ID: {e.RequestId}");
+                            }
 
                             var campaigndata = _context.Campaigns.FirstOrDefault(x => x.campaign_id == campaignId);
 
@@ -137,7 +149,6 @@ namespace GoogleLIA.Services
                                     status = googleAdsRow.Campaign.Status.ToString(), // Assuming Status is of type enum
                                     location = Newtonsoft.Json.JsonConvert.SerializeObject(countrynames)
                                 });
-
                                 _context.SaveChanges();
                             }
                         }
@@ -158,13 +169,12 @@ namespace GoogleLIA.Services
             return ret;
         }
 
-        public GCampaign CreateGoogleCampaign(GCampaign campaign)
+        public async Task<GCampaign> CreateGoogleCampaignAsync(GCampaign campaign, List<string> GeoTargetlist)
         {
             CampaignServiceClient campaignService = _googleAdsClient.GetService(Google.Ads.GoogleAds.Services.V15.CampaignService);
             CampaignCriterionServiceClient campaignCriterionService = _googleAdsClient.GetService(Google.Ads.GoogleAds.Services.V15.CampaignCriterionService);
 
-            string budget = CreateBudget(campaign.budget);
-
+            string budget = await CreateBudgetAsync(campaign.budget);
             List<CampaignOperation> operations = new List<CampaignOperation>();
 
             // Create the campaign.
@@ -184,7 +194,6 @@ namespace GoogleLIA.Services
                     TargetSearchNetwork = true,
                     TargetContentNetwork = false,
                     TargetPartnerSearchNetwork = false,
-
                 },
 
                 ShoppingSetting = new ShoppingSetting
@@ -201,7 +210,7 @@ namespace GoogleLIA.Services
             operations.Add(new CampaignOperation() { Create = item });
             try
             {
-                MutateCampaignsResponse retVal = campaignService.MutateCampaigns(
+                MutateCampaignsResponse retVal = await campaignService.MutateCampaignsAsync(
                     customerId.ToString(), operations);
 
                 if (retVal.Results.Count > 0)
@@ -210,31 +219,34 @@ namespace GoogleLIA.Services
                     {
                         string campaignResourceName = newCampaign.ResourceName;
 
-                        CampaignCriterion campaignCriterion = new CampaignCriterion()
+                        foreach (var targetlocation in GeoTargetlist)
                         {
-                            Campaign = campaignResourceName,
-                            Location = new LocationInfo()
+                            CampaignCriterion campaignCriterion = new CampaignCriterion()
                             {
-                                GeoTargetConstant = ResourceNames.GeoTargetConstant(2048)
+                                Campaign = campaignResourceName,
+                                Location = new LocationInfo()
+                                {
+                                    GeoTargetConstant = ResourceNames.GeoTargetConstant(long.Parse(targetlocation))
+                                }
+                            };
+
+                            CampaignCriterionOperation operation = new CampaignCriterionOperation()
+                            {
+                                Create = campaignCriterion
+                            };
+
+                            try
+                            {
+                                MutateCampaignCriteriaResponse response = await campaignCriterionService.MutateCampaignCriteriaAsync(
+                                    customerId.ToString(), new[] { operation });
+
+                                string campaignCriterionResourceName = response.Results[0].ResourceName;
+                                Console.WriteLine($"Set campaign location target with resource name '{campaignCriterionResourceName}'.");
                             }
-                        };
-
-                        CampaignCriterionOperation operation = new CampaignCriterionOperation()
-                        {
-                            Create = campaignCriterion
-                        };
-
-                        try
-                        {
-                            MutateCampaignCriteriaResponse response = campaignCriterionService.MutateCampaignCriteria(
-                                customerId.ToString(), new[] { operation });
-
-                            string campaignCriterionResourceName = response.Results[0].ResourceName;
-                            Console.WriteLine($"Set campaign location target with resource name '{campaignCriterionResourceName}'.");
-                        }
-                        catch (GoogleAdsException e)
-                        {
-                            Console.WriteLine($"Failed to set campaign location target. Exception says \"{e}\"");
+                            catch (GoogleAdsException e)
+                            {
+                                Console.WriteLine($"Failed to set campaign location target. Exception says \"{e}\"");
+                            }
                         }
                     }
                 }
@@ -255,7 +267,7 @@ namespace GoogleLIA.Services
             return campaign;
         }
 
-        public bool UpdateGoogleCampaign(GCampaign campaign)
+        public async Task<bool> UpdateGoogleCampaignAsync(GCampaign campaign)
         {
             bool ret = false;
 
@@ -277,7 +289,7 @@ namespace GoogleLIA.Services
             try
             {
                 // Update the campaign
-                MutateCampaignsResponse response = campaignService.MutateCampaigns(
+                MutateCampaignsResponse response = await campaignService.MutateCampaignsAsync(
                     customerId.ToString(), new[] { operation });
 
                 // Display the results.
@@ -301,7 +313,7 @@ namespace GoogleLIA.Services
             return ret;
         }
 
-        public bool DeleteGoogleCampaign(string campaignId)
+        public async Task<bool> DeleteGoogleCampaignAsync(string campaignId)
         {
             bool ret = false;
 
@@ -313,7 +325,7 @@ namespace GoogleLIA.Services
 
             try
             {
-                MutateCampaignsResponse retVal = campaignService.MutateCampaigns(
+                MutateCampaignsResponse retVal = await campaignService.MutateCampaignsAsync(
                     customerId.ToString(), new CampaignOperation[] { operation });
 
                 foreach (MutateCampaignResult removedCampaign in retVal.Results)
@@ -336,7 +348,7 @@ namespace GoogleLIA.Services
             return ret;
         }
 
-        public bool PauseGoogleCampaign(string campaignId)
+        public async Task<bool> PauseGoogleCampaignAsync(string campaignId)
         {
             bool ret = false;
 
@@ -355,7 +367,7 @@ namespace GoogleLIA.Services
             try
             {
                 // Update the campaign
-                MutateCampaignsResponse response = campaignService.MutateCampaigns(
+                MutateCampaignsResponse response = await campaignService.MutateCampaignsAsync(
                     customerId.ToString(), new[] { operation });
 
                 // Display the results.
@@ -379,7 +391,7 @@ namespace GoogleLIA.Services
             return ret;
         }
 
-        private string CreateBudget(double campaign_budget)
+        private async Task<string> CreateBudgetAsync(double campaign_budget)
         {
             CampaignBudgetServiceClient budgetService = _googleAdsClient.GetService(Google.Ads.GoogleAds.Services.V15.CampaignBudgetService);
 
@@ -397,7 +409,7 @@ namespace GoogleLIA.Services
 
             try
             {
-                MutateCampaignBudgetsResponse response = budgetService.MutateCampaignBudgets(customerId.ToString(), new CampaignBudgetOperation[] { budgetOperation });
+                MutateCampaignBudgetsResponse response = await budgetService.MutateCampaignBudgetsAsync(customerId.ToString(), new CampaignBudgetOperation[] { budgetOperation });
                 return response.Results[0].ResourceName;
             }
             catch (GoogleAdsException e)

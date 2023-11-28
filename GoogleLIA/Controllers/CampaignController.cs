@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GoogleLIA.Services;
 using GoogleLIA.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GoogleLIA.Controllers
 {
@@ -22,9 +23,9 @@ namespace GoogleLIA.Controllers
             _locationService = locationService;
         }
 
-        public ActionResult List()
+        public async Task<ActionResult> List()
         {
-            bool ret = _googleService.GetGoolgeCampaigns();
+            bool ret = await _googleService.GetGoolgeCampaignsAsync();
 
             if (ret)
             {
@@ -58,8 +59,10 @@ namespace GoogleLIA.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(GCampaign model)
+        public async Task<ActionResult> Create(GCampaign model)
         {
+
+
             ViewBag.CountryList = new SelectList(_locationService.GetCountries());
             ViewBag.LocationList = new List<SelectListItem>
                 {
@@ -70,16 +73,16 @@ namespace GoogleLIA.Controllers
             {
                 if (model.campaign_id == null)
                 {
-                    _googleService.CreateGoogleCampaign(model);
+                    List<string> GeoTargetlist = TempData["GeoTargetlist"] as List<string>;
+                    await _googleService.CreateGoogleCampaignAsync(model, GeoTargetlist);
                     ViewBag.Message = "Data Insert Successfully";
                 }
             }
-
             return RedirectToAction("List");
         }
 
         [HttpPut]
-        public ActionResult Update(int id, GCampaign model)
+        public async Task<ActionResult> Update(int id, GCampaign model)
         {
             var ret = false;
 
@@ -88,7 +91,7 @@ namespace GoogleLIA.Controllers
                 GCampaign gCampaign = _campaignService.UpdateCampaign(id, model);
                 if (gCampaign != null)
                 {
-                    ret = _googleService.UpdateGoogleCampaign(gCampaign);
+                    ret = await _googleService.UpdateGoogleCampaignAsync(gCampaign);
                 }
             }
 
@@ -99,16 +102,16 @@ namespace GoogleLIA.Controllers
             return View("Edit", model);
         }
 
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             GCampaign gCampaign = _campaignService.GetCampaign(id);
             var campaignId = gCampaign.campaign_id;
 
-            var ret = _googleService.DeleteGoogleCampaign(campaignId);
+            var ret = await _googleService.DeleteGoogleCampaignAsync(campaignId);
 
             if (ret)
             {
-                ret = _campaignService.DeleteCampaign(id);
+                ret =  _campaignService.DeleteCampaign(id);
             }
 
             ViewBag.Message = ret ?
@@ -118,10 +121,10 @@ namespace GoogleLIA.Controllers
             return RedirectToAction("List");
         }
 
-        public ActionResult Pause(int id )
+        public async Task<ActionResult> Pause(int id )
         {
             var gCampaign = _campaignService.GetCampaign(id);
-            var ret = _googleService.PauseGoogleCampaign(gCampaign.campaign_id);
+            var ret = await _googleService.PauseGoogleCampaignAsync(gCampaign.campaign_id);
 
             if (ret)
             {
@@ -145,5 +148,13 @@ namespace GoogleLIA.Controllers
             return Json(new { results = result });
         }
 
+        [HttpPost]
+        public ActionResult GetGeoTargetCodeList(List<string> locations)
+        {
+            List<string> GeoTargetlist = _locationService.GetGeoTargetCodeList(locations);
+            TempData["GeoTargetlist"] = GeoTargetlist;
+            return Json(new { results = GeoTargetlist });
+            //return RedirectToAction("Create", new { results = GeoTargetlist });
+        }
     }
 }
