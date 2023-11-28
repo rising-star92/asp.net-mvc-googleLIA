@@ -17,6 +17,7 @@ using static Google.Ads.GoogleAds.V15.Enums.BudgetDeliveryMethodEnum.Types;
 using GoogleLIA.Databases;
 using GoogleLIA.Models;
 using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace GoogleLIA.Services
 {
@@ -129,7 +130,7 @@ namespace GoogleLIA.Services
                                 Console.WriteLine($"Request ID: {e.RequestId}");
                             }
 
-                            var campaigndata = _context.Campaigns.FirstOrDefault(x => x.campaign_id == campaignId);
+                            var campaigndata = await _context.Campaigns.FirstOrDefaultAsync(x => x.campaign_id == campaignId);
 
                             if (campaigndata == null)
                             {
@@ -149,7 +150,7 @@ namespace GoogleLIA.Services
                                     status = googleAdsRow.Campaign.Status.ToString(), // Assuming Status is of type enum
                                     location = Newtonsoft.Json.JsonConvert.SerializeObject(countrynames)
                                 });
-                                _context.SaveChanges();
+                                await _context.SaveChangesAsync();
                             }
                         }
                     });
