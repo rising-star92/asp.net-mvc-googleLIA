@@ -46,7 +46,7 @@ namespace GoogleLIA.Services
             EnableProfiling = true
         };
 
-        public GoogleService(AdsDBContext context)
+        public GoogleService()
         {
             _googleAdsClient = new GoogleAdsClient(config: googleAdsConfig);
             _context = new AdsDBContext();
@@ -130,7 +130,7 @@ namespace GoogleLIA.Services
                                 Console.WriteLine($"Request ID: {e.RequestId}");
                             }
 
-                            var campaigndata = await _context.Campaigns.FirstOrDefaultAsync(x => x.campaign_id == campaignId);
+                            var campaigndata =  _context.Campaigns.FirstOrDefault(x => x.campaign_id == campaignId);
 
                             if (campaigndata == null)
                             {
@@ -150,7 +150,7 @@ namespace GoogleLIA.Services
                                     status = googleAdsRow.Campaign.Status.ToString(), // Assuming Status is of type enum
                                     location = Newtonsoft.Json.JsonConvert.SerializeObject(countrynames)
                                 });
-                                await _context.SaveChangesAsync();
+                                _context.SaveChanges();
                             }
                         }
                     });
